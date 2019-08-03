@@ -5,8 +5,8 @@
         "product_name": "//h2[@class='nm-product-name']"
     },
     "amazon": {
-        "parent": "//*[@data-component-type='s-search-results']//*[contains(@data-cel-widget, 'search_result_')]//div[@class='sg-row'][2]",
+        "parent": "//*[@data-component-type='s-search-results']//*[contains(@data-cel-widget, 'search_result_')]/div/div/div/div[2]",
         "price": "//span[@class='a-price' and @data-a-size='l']",
-        "product_name": "//span[@class='a-size-base-plus a-color-base a-text-normal']"
+        "product_name": "//span[@class='a-size-medium a-color-base a-text-normal']"
     }
 }
