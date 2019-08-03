@@ -1,0 +1,14 @@
+{
+    "americanas": {
+        "url": "https://www.americanas.com.br/busca/",
+        "innerChar": "-"
+    },
+    "amazon": {
+        "url": "https://www.amazon.com.br/s?currency=BRL&k=",
+        "innerChar": "+"
+    },
+    "magazine_luiza": {
+        "url": "https://busca.magazineluiza.com.br/busca?results_per_page=15&q=",
+        "innerChar": "+"
+    }
+}
