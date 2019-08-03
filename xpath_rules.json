@@ -1,0 +1,12 @@
+{
+    "magazine": {
+        "parent": "//*[@class='nm-product-item']",
+        "price": "//div[@class='nm-price-container']",
+        "product_name": "//h2[@class='nm-product-name']"
+    },
+    "amazon": {
+        "parent": "//*[@data-component-type='s-search-results']//*[contains(@data-cel-widget, 'search_result_')]//div[@class='sg-row'][2]",
+        "price": "//span[@class='a-price' and @data-a-size='l']",
+        "product_name": "//span[@class='a-size-base-plus a-color-base a-text-normal']"
+    }
+}
