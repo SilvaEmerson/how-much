@@ -1,3 +1,5 @@
 # pyenv
 .python-version
 .venv
+# VS Code config
+.vscode/
