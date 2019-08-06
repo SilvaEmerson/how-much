@@ -10,12 +10,10 @@ import re
 import os
 
 
-with open("./xpath_rules.json", "r") as f:
+with open("./config.json", "r") as f:
     CONFIG = json.load(f)
 
-URL_MAGAZINE = "https://busca.magazineluiza.com.br/busca?q=notebook+acer&results_per_page=15"
-URL_AMAZON = "https://www.amazon.com.br/s?currency=BRL&k=notebook+acer"
-PRICES_REGEXPS = {"magazine": r"(.+)\sà vista", "amazon": r"(.+)"}
+PRICES_REGEXP =  {"magazine": r"(.+)\sà vista", "amazon": r"(.+)"}
 
 
 def launch_browser(url, options):
@@ -26,7 +24,7 @@ def launch_browser(url, options):
     try:
         myElem = WebDriverWait(browser, delay, 0.1).until(
             lambda brwoser: brwoser.find_element_by_xpath(
-                CONFIG["parent"]
+                CONFIG['xpath']["parent"]
             ).is_displayed()
         )
         print("Page is ready!")
@@ -39,7 +37,7 @@ def launch_browser(url, options):
 def get_property(element, prop_xpath):
     prop = ""
     try:
-        prop = element.find_element_by_xpath(f".{prop_xpath}")
+        prop = element.find_element_by_xpath(f".{prop_xpath}").text
     except:
         pass
 
@@ -54,11 +52,18 @@ def transform_price(product, regexp):
 def close_browser():
     browser.close()
     browser.quit()
-    os.system("killall chrome chromedriver")
+    try:
+        os.system("killall chrome chromedriver")
+    except:
+        pass
 
 
 if __name__ == "__main__":
     CONFIG = CONFIG["magazine"]
+
+    search_term_input = input("> What your wish?\n> ")
+    search_term = CONFIG["innerChar"].join(search_term_input.split())
+
     options = Options()
     options.add_argument("--disable-extensions")
     options.add_argument("--disable-gpu")
@@ -69,12 +74,12 @@ if __name__ == "__main__":
     options.add_experimental_option("prefs", prefs)
     options.headless = True
 
-    browser = launch_browser(URL_MAGAZINE, options)
+    browser = launch_browser(f"{CONFIG['url']}{search_term}", options)
 
     base_obs = rx.of(browser).pipe(
         ops.flat_map(
             lambda browser: rx.from_(
-                browser.find_elements_by_xpath(CONFIG["parent"])
+                browser.find_elements_by_xpath(CONFIG["xpath"]["parent"])
             )
         ),
         ops.filter(lambda el: el.is_displayed()),
@@ -82,22 +87,19 @@ if __name__ == "__main__":
     )
 
     prices = base_obs.pipe(
-        ops.map(lambda el: get_property(el, CONFIG["price"])),
-        ops.pluck_attr("text"),
+        ops.map(lambda el: get_property(el, CONFIG["xpath"]["price"]))
     )
 
     names = base_obs.pipe(
-        ops.map(lambda el: get_property(el, CONFIG["product_name"])),
-        ops.pluck_attr("text"),
+        ops.map(lambda el: get_property(el, CONFIG["xpath"]["product_name"]))
     )
 
     names.pipe(
         ops.zip(prices),
+        ops.filter(lambda el: el[0] and el[1]),
         ops.map(lambda el: {"name": el[0], "price": el[1]}),
         ops.map(
-            lambda product: transform_price(
-                product, PRICES_REGEXPS["magazine"]
-            )
+            lambda product: transform_price(product, PRICES_REGEXP["amazon"])
         ),
     ).subscribe(
         on_next=print,
