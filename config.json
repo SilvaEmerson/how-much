@@ -1,0 +1,20 @@
+{
+    "magazine": { 
+        "xpath": {
+            "parent": "//*[@class='nm-product-item']",
+            "price": "//div[@class='nm-price-container']",
+            "product_name": "//h2[@class='nm-product-name']"
+        },
+        "url": "https://busca.magazineluiza.com.br/busca?results_per_page=15&q=",
+        "innerChar": "+"
+    },
+    "amazon": { 
+        "xpath": {
+            "parent": "//*[@data-component-type='s-search-results']//*[contains(@data-cel-widget, 'search_result_')]/div/div/div/div[2]",
+            "price": "//span[@class='a-price' and @data-a-size='l']",
+            "product_name": "//span[@class='a-size-medium a-color-base a-text-normal']"
+        },
+        "url": "https://www.amazon.com.br/s?currency=BRL&k=",
+        "innerChar": "+"
+    }
+}
