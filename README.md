@@ -4,7 +4,7 @@
 
 * First, create a virtual enviroment and activate it:
 ```shell
-python -m venv .venv && source .ven/bin/activate
+python -m venv .venv && source .venv/bin/activate
 ```
 
 * Then run `pip`:
