@@ -1,4 +1,8 @@
 {
+    "americanas": {
+        "url": "https://www.americanas.com.br/busca/",
+        "innerChar": "-"
+    },
     "magazine": { 
         "xpath": {
             "parent": "//*[@class='nm-product-item']",
