@@ -49,10 +49,6 @@ def transform_price(product: Dict[str, str], regexp: str) -> Dict[str, str]:
     return {**product, "price": new_price}
 
 
-def close_browser(browser: webdriver) -> None:
-    browser.close()
-
-
 def show_shops(config: Dict[str, dict]) -> None:
     shops = [*config.keys()]
     temp_str = map(
@@ -85,7 +81,7 @@ def get_products(
         ops.filter(lambda el: el[0] and el[1]),
         ops.map(lambda el: {"name": el[0], "price": el[1]}),
         ops.map(lambda product: transform_price(product, shop["priceRegexp"])),
-        ops.finally_action(lambda: close_browser(browser)),
+        ops.finally_action(lambda: browser.close()),
     )
 
     return base_obs
