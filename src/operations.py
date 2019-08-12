@@ -8,6 +8,7 @@ import rx
 
 import re
 import os
+import json
 from typing import Dict
 
 
@@ -59,13 +60,21 @@ def show_shops(config: Dict[str, dict]) -> None:
     return "\n".join(temp_str)
 
 
+def persist_prices(prices):
+    with open('./cache.json', 'w') as f:
+        json.dump(prices, f)
+
+
 def get_products(
     shop: Dict[str, str], search_term: str, options
 ) -> Observable:
+    domain = re.findall("\.(.+)\.com", shop['url'])[0]
+    print(f"Lauching {domain}") 
+
     browser = launch_browser(f"{shop['url']}{search_term}", options, shop)
 
     base_obs = rx.of(browser).pipe(
-        ops.do_action(lambda el: print("Getting products price")),
+        ops.do_action(lambda el: print(f"Getting products prices from {domain}")),
         ops.flat_map(
             lambda browser: rx.from_(
                 browser.find_elements_by_xpath(shop["xpath"]["parent"])

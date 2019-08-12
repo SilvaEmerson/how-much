@@ -10,7 +10,7 @@ from src.operations import *
 with open("./config.json", "r") as f:
     CONFIG = json.load(f)
 
-PRICES_REGEXP = {"magazine": r"(.+)\sà vista", "amazon": r"(.+)"}
+PRICES_REGEXP = {"magazine": r"(.+)\sà vista", "amazon": r"(.+)", "americanas": r"(.+)"}
 
 
 if __name__ == "__main__":
@@ -57,6 +57,8 @@ if __name__ == "__main__":
         ops.zip(search_term),
         ops.subscribe_on(scheduler),
         ops.flat_map(lambda el: get_products(*el, options)),
+        ops.to_iterable(),
+        ops.do_action(persist_prices)
     ).subscribe(
         on_next=print,
         on_error=lambda err: print(err),
