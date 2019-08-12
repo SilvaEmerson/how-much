@@ -4,3 +4,4 @@
 # VS Code config
 .vscode/
 __pycache__
+cache.json
