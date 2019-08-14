@@ -89,7 +89,7 @@ if __name__ == "__main__":
         main(search_term_input)
     else:
         answer = input(
-            f"{search_term_input} already has been in the cache, do you have look at?[Y/n]"
+            f"{search_term_input} it's already at the cache, do you have look at?[Y/n]"
         ).lower()
 
         if answer == "y":
