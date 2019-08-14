@@ -1,4 +1,4 @@
-# How Much :dollar:
+# HowMuch :dollar:
 
 ## Installing
 
