@@ -1,9 +1,8 @@
 from selenium import webdriver
+from rx import Observable
 from rx import operators as ops
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import TimeoutException
-from rx import Observable
 import rx
 
 import re
@@ -12,7 +11,11 @@ import json
 from typing import Dict
 
 
-COLORS = {"green": "\033[1;32;40m", "negative": "\033[3;37;40m", "underline": "\033[2;37;40m"}
+COLORS = {
+    "green": "\033[1;32;40m",
+    "negative": "\033[3;37;40m",
+    "underline": "\033[2;37;40m",
+}
 
 
 def launch_browser(
@@ -53,28 +56,28 @@ def transform_price(product: Dict[str, str], regexp: str) -> Dict[str, str]:
 def show_shops(config: Dict[str, dict]) -> None:
     shops = [*config.keys()]
     temp_str = map(
-        lambda ind, shop: f"[{ind}] {shop}\r",
-        range(len(shops)),
-        shops,
+        lambda ind, shop: f"[{ind}] {shop}\r", range(len(shops)), shops
     )
     return "\n".join(temp_str)
 
 
 def persist_prices(prices):
-    with open('./cache.json', 'w') as f:
+    with open("./cache.json", "w") as f:
         json.dump(prices, f)
 
 
 def get_products(
     shop: Dict[str, str], search_term: str, options
 ) -> Observable:
-    domain = re.findall("\.(.+)\.com", shop['url'])[0]
-    print(f"Lauching {domain}") 
+    domain = re.findall("\.(.+)\.com", shop["url"])[0]
+    print(f"Lauching {domain}")
 
     browser = launch_browser(f"{shop['url']}{search_term}", options, shop)
 
     base_obs = rx.of(browser).pipe(
-        ops.do_action(lambda el: print(f"Getting products prices from {domain}")),
+        ops.do_action(
+            lambda el: print(f"Getting products prices from {domain}")
+        ),
         ops.flat_map(
             lambda browser: rx.from_(
                 browser.find_elements_by_xpath(shop["xpath"]["parent"])
