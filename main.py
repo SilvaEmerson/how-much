@@ -10,8 +10,11 @@ from src.operations import *
 with open("./config.json", "r") as f:
     CONFIG = json.load(f)
 
-with open("./cache.json", "r") as f:
-    CACHE = json.load(f)
+if os.path.isfile('./cache.json'):
+    with open("./cache.json", "r") as f:
+        CACHE = json.load(f)
+else:
+    CACHE = [None]
 
 PRICES_REGEXP = {
     "magazine": r"(.+)\sà vista",
