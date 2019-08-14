@@ -85,7 +85,7 @@ def main(search_term_input):
 if __name__ == "__main__":
     search_term_input = input("> What your wish?\n> ").lower()
 
-    if not search_term_input in list(CACHE[0].keys()):
+    if not search_term_input in list(CACHE[0].keys()) and CACHE[0] is not None:
         main(search_term_input)
     else:
         answer = input(
