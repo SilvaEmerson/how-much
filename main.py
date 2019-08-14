@@ -14,7 +14,7 @@ if os.path.isfile('./cache.json'):
     with open("./cache.json", "r") as f:
         CACHE = json.load(f)
 else:
-    CACHE = [None]
+    CACHE = [{}]
 
 PRICES_REGEXP = {
     "magazine": r"(.+)\sà vista",
@@ -85,14 +85,14 @@ def main(search_term_input):
 if __name__ == "__main__":
     search_term_input = input("> What your wish?\n> ").lower()
 
-    if not search_term_input in list(CACHE[0].keys()) and CACHE[0] is not None:
+    if not search_term_input in list(CACHE[0].keys()):
         main(search_term_input)
     else:
         answer = input(
             f"{search_term_input} already has been in the cache, do you have look at?[Y/n]"
-        )
+        ).lower()
 
-        if answer == "Y":
+        if answer == "y":
             rx.from_(CACHE[0][search_term_input]).subscribe(print).dispose()
         else:
             main(search_term_input)
