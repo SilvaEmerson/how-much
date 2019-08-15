@@ -1,4 +1,5 @@
 # HowMuch :dollar:
+[![Build Status](https://travis-ci.org/SilvaEmerson/how-much.svg?branch=master)](https://travis-ci.org/SilvaEmerson/how-much)
 
 ## Installing
 
