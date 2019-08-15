@@ -26,15 +26,15 @@ PRICES_REGEXP = {
 }
 
 
-def shop_picker_input():
+def shop_picker_input(shops_picker_msg):
     return input(
-        f"> Choose what shop(s) you want to search by typing the respective number(s):\n{shops_picker}\n>> "
+        f"> Choose what shop(s) you want to search by typing the respective number(s):\n{shops_picker_msg}\n>> "
     )
 
 
 def main(search_term_input, shop_picker_input):
-    shops_picker = show_shops(CONFIG)
-    shops_input = shop_picker_input()
+    shops_picker_msg = show_shops(CONFIG)
+    shops_input = shop_picker_input(shops_picker_msg)
 
     options = Options()
     options.add_argument("--disable-extensions")
@@ -52,7 +52,7 @@ def main(search_term_input, shop_picker_input):
 
     shops = rx.from_(shops_list).pipe(
         ops.map(
-            lambda shop: re.findall(f"\[{shop}\]\s(\w+)", shops_picker)[0]
+            lambda shop: re.findall(f"\[{shop}\]\s(\w+)", shops_picker_msg)[0]
         ),
         ops.map(
             lambda shop: {
