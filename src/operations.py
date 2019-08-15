@@ -56,7 +56,7 @@ def transform_price(product: Dict[str, str], regexp: str) -> Dict[str, str]:
 def show_shops(config: Dict[str, dict]) -> None:
     shops = [*config.keys()]
     temp_str = map(
-        lambda ind, shop: f"[{ind}] {shop}\r", range(len(shops)), shops
+        lambda ind, shop: f"[{ind}] {shop}", range(len(shops)), shops
     )
     return "\n".join(temp_str)
 
