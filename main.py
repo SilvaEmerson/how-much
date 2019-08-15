@@ -1,16 +1,19 @@
-from rx import Observable
+from rx import operators as ops
 from rx.scheduler import ThreadPoolScheduler
+from selenium.webdriver.chrome.options import Options
+import rx
 
 import os
 import json
+import re
 
-from src.operations import *
+from src.operations import show_shops, persist_prices, get_products
 
 
 with open("./config.json", "r") as f:
     CONFIG = json.load(f)
 
-if os.path.isfile('./cache.json'):
+if os.path.isfile("./cache.json"):
     with open("./cache.json", "r") as f:
         CACHE = json.load(f)
 else:
