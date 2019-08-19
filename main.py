@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 from rx import operators as ops
 from rx.scheduler import ThreadPoolScheduler
 from selenium.webdriver.chrome.options import Options
