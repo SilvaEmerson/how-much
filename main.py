@@ -50,8 +50,6 @@ def main(search_term_input, shop_picker_input):
 
     shops_list = shops_input.split(",")
 
-    scheduler = ThreadPoolScheduler(len(shops_list))
-
     shops = rx.from_(shops_list).pipe(
         ops.map(
             lambda shop: re.findall(f"\[{shop}\]\s(\w+)", shops_picker_msg)[0]
@@ -72,7 +70,6 @@ def main(search_term_input, shop_picker_input):
 
     found_products = shops.pipe(
         ops.zip(search_term),
-        ops.subscribe_on(scheduler),
         ops.flat_map(lambda el: get_products(*el, options)),
         ops.publish(),
     )
@@ -93,10 +90,14 @@ def persist_prices(found_products_obs):
 if __name__ == "__main__":
     subscription = None
 
+    scheduler = ThreadPoolScheduler(len(shops_list))
+
     search_term_input = input("> What your wish?\n> ").lower()
 
     if not search_term_input in list(CACHE[0].keys()):
-        found_products = main(search_term_input, shop_picker_input)
+        found_products = main(search_term_input, shop_picker_input).pipe(
+            ops.subscribe_on(scheduler)
+        )
         persist_prices_obs = persist_prices(found_products)
         found_products_subscription = found_products.subscribe(
             on_next=print,
@@ -115,7 +116,9 @@ if __name__ == "__main__":
         if answer == "y":
             rx.from_(CACHE[0][search_term_input]).subscribe(print).dispose()
         else:
-            found_products = main(search_term_input, shop_picker_input)
+            found_products = main(search_term_input, shop_picker_input).pipe(
+                ops.subscribe_on(scheduler)
+            )
             persist_prices_obs = persist_prices(found_products)
             found_products_subscription = found_products.subscribe(
                 on_next=print,
