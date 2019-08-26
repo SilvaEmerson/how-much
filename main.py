@@ -77,7 +77,7 @@ def main(search_term_input, shop_picker_input):
     return found_products
 
 
-def persist_prices(found_products_obs):
+def persist_prices_obs(found_products_obs):
     persist_prices_obs = found_products.pipe(
         ops.to_list(),
         ops.do_action(
@@ -98,7 +98,7 @@ if __name__ == "__main__":
         found_products = main(search_term_input, shop_picker_input).pipe(
             ops.subscribe_on(scheduler)
         )
-        persist_prices_obs = persist_prices(found_products)
+        persist_prices_obs = persist_prices_obs(found_products)
         found_products_subscription = found_products.subscribe(
             on_next=print,
             on_error=lambda err: print(err),
@@ -119,7 +119,7 @@ if __name__ == "__main__":
             found_products = main(search_term_input, shop_picker_input).pipe(
                 ops.subscribe_on(scheduler)
             )
-            persist_prices_obs = persist_prices(found_products)
+            persist_prices_obs = persist_prices_obs(found_products)
             found_products_subscription = found_products.subscribe(
                 on_next=print,
                 on_error=lambda err: print(err),
