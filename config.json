@@ -1,13 +1,4 @@
 {
-    "americanas": {
-        "xpath": {
-            "parent": "//*[contains(@class, 'product-grid-item')]",
-            "price": "//span[contains(@class, 'PriceUI')]",
-            "product_name": "//h3[contains(@class, 'TitleUI')]" 
-        },
-        "url": "https://www.americanas.com.br/busca/",
-        "innerChar": "-"
-    },
     "magazine": { 
         "xpath": {
             "parent": "//*[@class='nm-product-item']",
