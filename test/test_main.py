@@ -7,14 +7,12 @@ import json
 from main import main
 
 
-
 with open('./config.json', 'r') as shops_config:
     config = json.load(shops_config)
 
 
 shop_picker_input_mock = Mock()
 search_term_input_mock = "notebook"
-
 
 
 class Main(unittest.TestCase):

@@ -9,7 +9,14 @@ import os
 import json
 import re
 
-from src.operations import show_shops, persist_prices, get_products
+from src.operations import (
+    show_shops,
+    persist_prices,
+    get_products,
+    shop_picker_input,
+    persist_prices_obs,
+    search_product
+)
 
 
 with open("./config.json", "r") as f:
@@ -21,70 +28,24 @@ if os.path.isfile("./cache.json"):
 else:
     CACHE = [{}]
 
-PRICES_REGEXP = {
-    "magazine": r"(.+)\sà vista",
-    "amazon": r"(.+)",
-    "americanas": r"(.+)",
-}
 
-
-def shop_picker_input(shops_picker_msg):
-    return input(
-        f"> Choose what shop(s) you want to search by typing the respective number(s):\n{shops_picker_msg}\n>> "
-    )
-
-
-def main(search_term_input, shop_picker_input):
-    shops_picker_msg = show_shops(CONFIG)
+def main(found_products_obs):
     shops_input = shop_picker_input(shops_picker_msg)
-
-    options = Options()
-    options.add_argument("--disable-extensions")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--disable-infobars")
-
-    prefs = {"profile.managed_default_content_settings.images": 2}
-
-    options.add_experimental_option("prefs", prefs)
-    options.headless = True
-
     shops_list = shops_input.split(",")
 
-    shops = rx.from_(shops_list).pipe(
-        ops.map(
-            lambda shop: re.findall(f"\[{shop}\]\s(\w+)", shops_picker_msg)[0]
-        ),
-        ops.map(
-            lambda shop: {
-                **CONFIG.get(shop),
-                "priceRegexp": PRICES_REGEXP.get(shop),
-            }
-        ),
-        ops.filter(lambda el: el),
+    found_products = search_product(search_term_input, shops_list).pipe(
+        ops.subscribe_on(scheduler)
     )
-
-    search_term = shops.pipe(
-        ops.pluck("innerChar"),
-        ops.map(lambda inner_char: inner_char.join(search_term_input.split())),
+    persist_prices_obs = persist_prices_obs(found_products_obs)
+    found_products_subscription = found_products.subscribe(
+        on_next=print,
+        on_error=lambda err: print(err),
+        on_completed=lambda: found_products_subscription.dispose(),
     )
-
-    found_products = shops.pipe(
-        ops.zip(search_term),
-        ops.flat_map(lambda el: get_products(*el, options)),
-        ops.publish(),
+    persist_prices_subscription = persist_prices_obs.subscribe(
+        on_completed=lambda: persist_prices_subscription.dispose()
     )
-
-    return found_products
-
-
-def persist_prices_obs(found_products_obs):
-    persist_prices_obs = found_products.pipe(
-        ops.to_list(),
-        ops.do_action(
-            lambda products: persist_prices([{search_term_input: products}])
-        ),
-    )
-    return persist_prices_obs
+    found_products.connect()
 
 
 if __name__ == "__main__":
@@ -95,7 +56,10 @@ if __name__ == "__main__":
     search_term_input = input("> What your wish?\n> ").lower()
 
     if not search_term_input in list(CACHE[0].keys()):
-        found_products = main(search_term_input, shop_picker_input).pipe(
+        shops_input = shop_picker_input(shops_picker_msg)
+        shops_list = shops_input.split(",")
+
+        found_products = main(search_term_input, shops_list).pipe(
             ops.subscribe_on(scheduler)
         )
         persist_prices_obs = persist_prices_obs(found_products)
@@ -116,6 +80,9 @@ if __name__ == "__main__":
         if answer == "y":
             rx.from_(CACHE[0][search_term_input]).subscribe(print).dispose()
         else:
+            shops_input = shop_picker_input(shops_picker_msg)
+            shops_list = shops_input.split(",")
+
             found_products = main(search_term_input, shop_picker_input).pipe(
                 ops.subscribe_on(scheduler)
             )
