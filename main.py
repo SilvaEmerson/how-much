@@ -15,7 +15,7 @@ from src.operations import (
     get_products,
     shop_picker_input,
     persist_prices_obs,
-    search_product
+    search_product,
 )
 
 
@@ -29,25 +29,6 @@ else:
     CACHE = [{}]
 
 
-def main(found_products_obs):
-    shops_input = shop_picker_input(shops_picker_msg)
-    shops_list = shops_input.split(",")
-
-    found_products = search_product(search_term_input, shops_list).pipe(
-        ops.subscribe_on(scheduler)
-    )
-    persist_prices_obs = persist_prices_obs(found_products_obs)
-    found_products_subscription = found_products.subscribe(
-        on_next=print,
-        on_error=lambda err: print(err),
-        on_completed=lambda: found_products_subscription.dispose(),
-    )
-    persist_prices_subscription = persist_prices_obs.subscribe(
-        on_completed=lambda: persist_prices_subscription.dispose()
-    )
-    found_products.connect()
-
-
 if __name__ == "__main__":
     subscription = None
 
@@ -56,12 +37,13 @@ if __name__ == "__main__":
     search_term_input = input("> What your wish?\n> ").lower()
 
     if not search_term_input in list(CACHE[0].keys()):
+        shops_picker_msg = show_shops(CONFIG)
         shops_input = shop_picker_input(shops_picker_msg)
         shops_list = shops_input.split(",")
 
-        found_products = main(search_term_input, shops_list).pipe(
-            ops.subscribe_on(scheduler)
-        )
+        found_products = search_product(
+            search_term_input, shops_list, shops_picker_msg, CONFIG=CONFIG
+        ).pipe(ops.subscribe_on(scheduler))
         persist_prices_obs = persist_prices_obs(found_products)
         found_products_subscription = found_products.subscribe(
             on_next=print,

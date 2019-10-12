@@ -25,7 +25,9 @@ PRICES_REGEXP = {
 }
 
 
-def search_product(search_term_input, shops_list, shops_picker_msg, CONFIG=None):
+def search_product(
+    search_term_input, shops_list, shops_picker_msg, CONFIG=None
+):
     shops_picker_msg = show_shops(CONFIG)
 
     options = Options()

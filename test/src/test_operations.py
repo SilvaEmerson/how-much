@@ -1,10 +1,11 @@
 import unittest
 from unittest.mock import Mock
+import json
 
-from src.operations import show_shops, get_property
+from src.operations import show_shops, get_property, search_product
 
 
-with open('./config.json', 'r') as shops_config:
+with open("./config.json", "r") as shops_config:
     config = json.load(shops_config)
 
 
@@ -14,6 +15,8 @@ mocked_child = Mock()
 mocked_parent.find_element_by_xpath.return_value = mocked_child
 
 config_mock = {"magazine": {}, "americanas": {}, "amazon": {}}
+shops_list = [0]
+search_term_input_mock = "notebook"
 
 
 class Main(unittest.TestCase):
@@ -36,7 +39,13 @@ class Main(unittest.TestCase):
 
     def test_should_return_no_empty_observable(self):
         for id, shop_name in enumerate(config):
-            shop_picker_input_mock = Mock(return_value=f'{id}')
-            products = search_product(search_term_input_mock, shop_picker_input_mock)
-            products.subscribe(lambda res: self.assertGreater(len(res), 0, msg=f'{shop_name} return nothing'))
+            shop_picker_input_mock = Mock(return_value=f"{id}")
+            products = search_product(
+                search_term_input_mock, shops_list, shop_picker_input_mock, CONFIG=config_mock
+            )
+            products.subscribe(
+                lambda res: self.assertGreater(
+                    len(res), 0, msg=f"{shop_name} return nothing"
+                )
+            )
             products.connect()
